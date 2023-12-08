@@ -1,7 +1,9 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref } from 'vue';
+// import computed from 'vue';
+// import watch from 'vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
-import { size } from 'lodash';
+// import { size } from 'lodash';
 import JetCheckbox from '@/Components/Checkbox.vue';
 import JetValidationErrors from '@/Components/ValidationErrors.vue';
 import JetSecondaryButton from '@/Components/Jetstream/SecondaryButton.vue';
@@ -26,6 +28,7 @@ const form = useForm({
   password: '',
   remember: false,
 });
+/*
 const providerForm = useForm({});
 
 watch(
@@ -34,8 +37,9 @@ watch(
     publicKeyRef.value = value;
   },
 );
+*/
 
-const providersExists = computed(() => size(props.providers) > 0);
+// const providersExists = computed(() => size(props.providers) > 0);
 
 const submit = () => {
   form
@@ -48,6 +52,7 @@ const submit = () => {
     });
 };
 
+/*
 const open = (provider) => {
   providerForm
     .transform(() => ({
@@ -61,6 +66,7 @@ const open = (provider) => {
       },
     });
 };
+*/
 
 const reload = () => {
   publicKeyRef.value = null;
@@ -168,6 +174,7 @@ const reload = () => {
               <PrettyButton :text="$t('Log in')" :state="loadingState" :class="'save ms-4'" />
             </div>
 
+            <!--
             <div class="mt-3 block">
               <p v-if="providersExists" class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {{ $t('Login with:') }}
@@ -186,7 +193,7 @@ const reload = () => {
                 </JetSecondaryButton>
               </div>
             </div>
-
+            -->
             <div v-if="publicKeyRef" class="mt-3 block">
               <JetSecondaryButton class="me-2" @click.prevent="reload">
                 {{ $t('Use your security key') }}
@@ -194,13 +201,14 @@ const reload = () => {
             </div>
           </form>
         </div>
-
+        <!--
         <div class="px-6 py-6 text-sm dark:text-gray-50">
           {{ $t('New to Monica?') }}
           <Link :href="route('register')" class="text-blue-500 hover:underline">
             {{ $t('Create an account') }}
           </Link>
         </div>
+        -->
       </div>
     </div>
   </div>
