@@ -17,6 +17,9 @@
 /.scribe
 /tests/Features/screenshots/
 /tests/Features/videos/
+.fly/
+fly.toml
+Dockerfile
 .pnp.*
 .yarn/*
 !.yarn/patches
