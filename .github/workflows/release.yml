@@ -13,56 +13,20 @@ on:
   workflow_dispatch:
 
 env:
-  php-version: '8.2'
-  build-node-version: 18
-  semantic-node-version: 18
+  php-version: '8.3'
+  build-node-version: 20
 
 jobs:
   ####################
   # Semantic release
   ####################
   semantic:
-    runs-on: ubuntu-latest
-    name: Semantic release
     if: github.event_name != 'pull_request'
-
-    outputs:
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Get all tags
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.semantic-node-version }}
-
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN_RELEASE: ${{ secrets.GH_TOKEN_RELEASE }}
-        with:
-          semantic_version: 19
-          extra_plugins: |
-            conventional-changelog-conventionalcommits@5.0.0
-            @semantic-release/changelog@6
-
-      - name: New release published
-        if: steps.semantic.outputs.new_release_published == 'true'
-        run: echo "### Release ${{ steps.semantic.outputs.new_release_version }} created :rocket:" >> $GITHUB_STEP_SUMMARY
-
-      - name: Store changelog file
-        if: steps.semantic.outputs.new_release_published == 'true'
-        uses: actions/upload-artifact@v3
-        with:
-          name: changelog
-          path: CHANGELOG.md
+    uses: monicahq/workflows/.github/workflows/release.yml@v2
+    with:
+      semantic_version: 19
+    secrets:
+      GH_TOKEN_RELEASE: ${{ secrets.GH_TOKEN_RELEASE }}
 
   package:
     needs: semantic
@@ -76,7 +40,7 @@ jobs:
         with:
           ref: v${{ needs.semantic.outputs.new_release_version }}
       - name: Download changelog file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: changelog
 
@@ -91,7 +55,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - name: Cache composer files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ env.php-version }}-${{ hashFiles('**/composer.lock') }}
@@ -129,13 +93,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Store package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: package
           path: ${{ steps.package.outputs.package }}
 
       - name: Store assets
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: assets
           path: ${{ steps.package.outputs.assets }}
